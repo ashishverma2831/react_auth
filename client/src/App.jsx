@@ -16,6 +16,7 @@ const router = createBrowserRouter([
   )},
   {path:'/register', element: <Register />},
   {path:'/forgot-password', element: <ForgotPassword />},
+  {path:'*', element: <h1>404 Not Found</h1>}
 ])
 
 const App = () => {
