@@ -19,7 +19,7 @@ const userSchema = new Schema({
         OTP: String,
         expires: Date,
     },
-    VerificationToken:{
+    verificationToken:{
         token: String,
         expires: Date,
     },

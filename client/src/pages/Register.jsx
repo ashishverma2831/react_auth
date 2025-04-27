@@ -2,6 +2,8 @@ import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const Register = () => {
 
@@ -22,23 +24,20 @@ const Register = () => {
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
       )
-      .required('Password is required'),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), null], 'Passwords must match')
-      .required('Confirm password is required')
+      .required('Password is required')
   });
 
   // Handle form submission
-  const handleSubmit = (values, { setSubmitting }) => {
-    // Here you would typically send the data to your backend
+  const handleSubmit = async (values,{setSubmitting,resetForm}) => {
     console.log(values);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setSubmitting(false);
-      // Redirect to login after successful registration
-      navigate('/');
-    }, 1000);
+    try {
+      const response = await axios.post('http://localhost:3000/api/users/register',values);
+      toast.success('Registration successful! Please check your email for verification.');
+      navigate('/'); // Redirect to login page after successful registration
+      console.log('Registration successful:', response);
+    } catch (error) {
+      console.error('Error during registration:', error);
+    } 
   };
 
 
@@ -64,7 +63,6 @@ const Register = () => {
               username: '',
               email: '',
               password: '',
-              confirmPassword: ''
             }}
             validationSchema={RegisterSchema}
             onSubmit={handleSubmit}
@@ -115,22 +113,6 @@ const Register = () => {
                       className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     />
                     <ErrorMessage name="password" component="div" className="mt-1 text-sm text-red-600" />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                    Confirm Password
-                  </label>
-                  <div className="mt-1">
-                    <Field
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      autoComplete="new-password"
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    />
-                    <ErrorMessage name="confirmPassword" component="div" className="mt-1 text-sm text-red-600" />
                   </div>
                 </div>
 
