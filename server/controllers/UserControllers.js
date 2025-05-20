@@ -2,6 +2,7 @@ const UserModel = require('../models/UserModel');
 const otpgenerator = require('otp-generator');
 const bcrypt = require('bcryptjs');
 const sendEmail = require('../Email Service/email');
+const jwt = require('jsonwebtoken');
 
 const registerUser = async (req, res) => {
     try {
@@ -44,7 +45,34 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         console.log(req.body);
-        res.json({ message: 'User logged in successfully' });
+        // res.json({ message: 'User logged in successfully' });
+        const isUserExist = await UserModel.findOne({ email: req.body.email });
+        console.log(isUserExist);
+        if (!isUserExist) {
+            return res.status(400).json({ message: `User with ${req.body.email} don't exists` });
+        }
+        if (!isUserExist.isVerified) {
+            return res.status(400).json({ message: 'Please verify your email before logging in' });
+        }
+
+        const isPasswordMatch = await bcrypt.compare(req.body.password, isUserExist.password);
+        if (!isPasswordMatch) {
+            return res.status(400).json({ message: 'Invalid password' });
+        }
+
+        // create a JWT
+        const jwtPayload = {
+            id: isUserExist._id,
+        };
+        const token = jwt.sign(jwtPayload,process.env.JWT_SECRET, {
+            expiresIn: '24h'
+        });
+        console.log(token);
+        
+        res.json({
+            message: 'User logged in successfully',
+            token: token,
+        });
     } catch (error) {
         res.json({ message: error.message });
     }

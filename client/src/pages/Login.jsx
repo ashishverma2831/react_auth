@@ -2,6 +2,8 @@ import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link } from 'react-router';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const Login = () => {
 
@@ -17,9 +19,20 @@ const Login = () => {
   });
 
   // Handle form submission
-  const handleSubmit = (values, { setSubmitting }) => {
-    console.log('Login attempt:', values);
+  const handleSubmit = async (values, { setSubmitting }) => {
+    console.log(values);
+    console.log('import.meta.env.VITE_BASE_SERVER_URL', import.meta.env.VITE_BASE_SERVER_URL);    
     
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_BASE_SERVER_URL}/api/users/login`, values);
+      console.log('Login successful:', res);
+      toast.success('Login successful');
+      localStorage.setItem('token', res.data.token); 
+      navigate('/home'); 
+    } catch (error) {
+      console.log('Error during login:', error);
+      toast.error(error.response?.data?.message || 'Login failed');
+    }
   };
 
 

@@ -4,8 +4,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
-import Auth from './utils/Auth'
-
+import {Auth} from './utils/Auth'
 
 const router = createBrowserRouter([
   {path:'/', index:true, element: <Login />},
